@@ -4,6 +4,32 @@ from PIL import Image
 import torchvision.transforms as T
 from io import BytesIO
 
+st.markdown(
+    """
+    <style>
+    .main {
+        background-color: #F0F0F0;  # Light background color
+        color: #003366;  # Dark blue text color
+    }
+    .sidebar .sidebar-content {
+        background-color: #FFD700;  # Gold sidebar color
+    }
+    .stButton>button {
+        background-color: #003366;  # Dark blue button background
+        color: white;  # White text for buttons
+        border-radius: 5px;  # Rounded corners for buttons
+        padding: 10px;  # Button padding for a better look
+    }
+    .stTextInput>div>input {
+        background-color: #FFD700;  # Light gold background for text input
+    }
+    .stFileUploader>div>div>div>input {
+        background-color: #FFD700;  # Gold background for file upload button
+    }
+    </style>
+    """, unsafe_allow_html=True
+)
+
 # Load the model
 model = torch.load('best.pt')
 model.eval()  # Set the model to evaluation mode
