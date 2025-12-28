@@ -8,3 +8,8 @@ requests
 pillow
 pyyaml
 streamlit
+streamlit
+ultralytics
+opencv-python-headless
+numpy
+Pillow
