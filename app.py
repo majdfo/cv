@@ -1,75 +1,54 @@
 import streamlit as st
-import cv2
-import numpy as np
-from ultralytics import YOLO
+import torch
 from PIL import Image
-import io
+import torchvision.transforms as T
+from io import BytesIO
 
-# 1. تحميل الموديل
-@st.cache_resource
-def load_model():
-    return YOLO('best.pt')
+# Load the model
+model = torch.load('best.pt')
+model.eval()  # Set the model to evaluation mode
 
-model = load_model()
+# Define the transformation (assuming your model uses common transforms like Resize, ToTensor)
+transform = T.Compose([
+    T.Resize((640, 640)),
+    T.ToTensor(),
+    T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+])
 
-# 2. دالة التنبؤ والرسم
-def predict_and_draw(image_array):
-    results = model(image_array)  # الحصول على نتائج من النموذج
-    img = image_array.copy()
+# Function to predict on the image
+def predict_image(image):
+    # Apply transformations to the uploaded image
+    image = transform(image).unsqueeze(0)  # Add batch dimension
 
-    for result in results:  # التعامل مع جميع النتائج (في حالة وجود أكثر من فئة)
-        boxes = result.boxes  # الحصول على الصناديق
-        
-        for box in boxes:
-            conf = float(box.conf[0])  # نسبة الثقة
-            
-            if conf > 0.25:  # شرط الثقة
-                x1, y1, x2, y2 = map(int, box.xyxy[0])  # استخراج الإحداثيات
-                label = model.names[int(box.cls[0])]  # استخراج اسم الفئة
-                
-                # تحديد اللون بناءً على الفئة
-                color = (0, 255, 0) if label == "PhoneUse" else (255, 0, 0) if label == "Seatbelt" else (0, 0, 255)
-                
-                # رسم المستطيل
-                cv2.rectangle(img, (x1, y1), (x2, y2), color, 3)
-                
-                # كتابة النص
-                text = f"{label} {conf:.2f}"
-                cv2.putText(img, text, (x1, y1 - 10), 
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
+    # Run the model to get predictions
+    with torch.no_grad():
+        outputs = model(image)
     
-    return img
+    # Process the outputs (modify as needed for your model's output format)
+    # Assuming the model outputs a dictionary with class labels and scores
+    predictions = outputs[0]  # Adjust based on how your model outputs
+    return predictions
 
-# 3. واجهة التطبيق
-st.title("Driver Distraction Detection (YOLOv8) 🚗")
-st.write("نظام كشف تشتت السائق - متوافق مع Streamlit Cloud")
-
-option = st.radio("اختر طريقة الإدخال:", ("التقاط صورة (كاميرا)", "رفع صورة من الجهاز"))
-
-if option == "التقاط صورة (كاميرا)":
-    img_file = st.camera_input("التقط صورة الآن")
+# Streamlit Interface
+def main():
+    st.title("Phone Use, Seatbelt, and Smoking Detection")
     
-    if img_file is not None:
-        image = Image.open(img_file)
-        img_array = np.array(image)
-        
-        # المعالجة
-        res_img = predict_and_draw(img_array)
-        
-        # العرض
-        st.image(res_img, caption="النتيجة", use_column_width=True)
-
-elif option == "رفع صورة من الجهاز":
-    uploaded_file = st.file_uploader("اختر صورة...", type=["jpg", "jpeg", "png"])
+    # Upload image
+    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
     
     if uploaded_file is not None:
+        # Display image
         image = Image.open(uploaded_file)
-        st.image(image, caption="الصورة الأصلية", use_column_width=True)
+        st.image(image, caption="Uploaded Image.", use_column_width=True)
         
-        img_array = np.array(image)
+        # Make prediction
+        predictions = predict_image(image)
         
-        # المعالجة
-        res_img = predict_and_draw(img_array)
-        
-        # العرض
-        st.image(res_img, caption="الصورة المعالجة", use_column_width=True)
+        # Display results
+        st.write("Prediction Results:")
+        st.write("Phone Use:", predictions['PhoneUse'])
+        st.write("Seatbelt:", predictions['Seatbelt'])
+        st.write("Smoking:", predictions['Smoking'])
+
+if __name__ == '__main__':
+    main()
