@@ -7,7 +7,12 @@ import io
 import time
 
 # تحميل نموذج YOLO
-model = YOLO("best.pt")
+@st.cache_resource
+def load_model():
+    model = YOLO('best.pt')
+    return model
+
+model = load_model()
 
 # دالة لتحديد سبب تشدد السائق ورسم المستطيلات
 def predict_and_draw(frame):
