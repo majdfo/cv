@@ -31,7 +31,8 @@ st.markdown(
 )
 
 # Load the model
-model = torch.load('best.pt')
+model = torch.load('best.pt', weights_only=False)
+
 model.eval()  # Set the model to evaluation mode
 
 # Define the transformation (assuming your model uses common transforms like Resize, ToTensor)
