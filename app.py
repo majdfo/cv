@@ -29,6 +29,7 @@ st.markdown(
     </style>
     """, unsafe_allow_html=True
 )
+torch.serialization.add_safe_globals([ultralytics.nn.tasks.DetectionModel])
 
 # Load the model
 model = torch.load('best.pt', weights_only=False)
