@@ -1,6 +1,5 @@
 torch
 numpy
-opencv-python
 ultralytics
 matplotlib
 pandas
@@ -8,3 +7,4 @@ requests
 pillow
 pyyaml
 streamlit
+opencv-python-headless
