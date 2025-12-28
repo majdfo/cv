@@ -32,7 +32,7 @@ st.markdown(
 torch.serialization.add_safe_globals([ultralytics.nn.tasks.DetectionModel])
 
 # Load the model
-model = torch.load('best.pt', weights_only=False)
+model = torch.load('best.pt', weights_only=True)
 
 model.eval()  # Set the model to evaluation mode
 
