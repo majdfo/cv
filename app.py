@@ -1,16 +1,8 @@
+# app.py
 import streamlit as st
-import torch
-from PIL import Image
 import numpy as np
-from my_utils import load_model, detect_objects
-
-# تحميل النموذج المدرب
-def load_custom_model(model_path):
-    # تحميل النموذج باستخدام attempt_load من YOLOv5 v8
-    model = torch.hub.load('ultralytics/yolov5:v8', 'custom', path=model_path, force_reload=True)
-    return model
-
-model = load_custom_model('best.pt')
+from PIL import Image
+from my_utils import load_model, detect_objects  # استيراد الدوال من my_utils.py
 
 def main():
     st.title("Detection of Driver Distractions")
@@ -25,6 +17,9 @@ def main():
         # معالجة الصورة
         st.write("Processing the image...")
         img = np.array(img)  # تحويل الصورة إلى مصفوفة نمرية
+
+        # تحميل النموذج المدرب
+        model = load_model('best.pt')
 
         # تنفيذ الكشف باستخدام النموذج
         results = detect_objects(model, img)
