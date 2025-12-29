@@ -2,12 +2,13 @@ import streamlit as st
 from PIL import Image
 import torch
 import numpy as np
+from ultralytics import YOLO  # Import YOLO from ultralytics
 
 # Function to load the trained YOLOv8 model
 @st.cache(allow_output_mutation=True)
 def load_model():
-    # Load YOLOv8 model from best.pt file
-    model = torch.hub.load('ultralytics/yolov8', 'custom', path='best.pt')  
+    # Load the custom YOLOv8 model using the ultralytics package
+    model = YOLO("best.pt")  # Load the model directly using YOLO from ultralytics
     return model
 
 # Load the model once
