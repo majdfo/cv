@@ -2,7 +2,8 @@ import streamlit as st
 import torch
 from PIL import Image
 import numpy as np
-from utils import load_model, detect_objects
+from my_utils import load_model, detect_objects
+
 
 # تحميل النموذج المدرب
 model = load_model('best.pt')
