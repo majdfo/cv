@@ -4,8 +4,13 @@ from PIL import Image
 import torchvision.transforms as T
 from io import BytesIO
 
-# Load the model
-model = torch.load('best.pt', weights_only=False)
+
+
+# إضافة الكلاسات المخصصة إلى الـ allowlist
+torch.serialization.add_safe_globals([ultralytics.nn.tasks.DetectionModel])
+
+# تحميل النموذج مع weights_only=True
+model = torch.load('best.pt', weights_only=True)
 
 model.eval()  # Set the model to evaluation mode
 
