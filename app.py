@@ -6,7 +6,9 @@ from my_utils import load_model, detect_objects
 
 
 # تحميل النموذج المدرب
-model = load_model('best.pt')
+model_path = load_model('best.pt')
+model = torch.hub.load('ultralytics/yolov5', 'custom', path=model_path, force_reload=True)
+
 
 def main():
     st.title("Detection of Driver Distractions")
