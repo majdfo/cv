@@ -1,39 +1,15 @@
 import streamlit as st
 import torch
 from PIL import Image
-import torchvision.transforms as T
-from io import BytesIO
+from ultralytics import YOLO  # استيراد YOLO من ultralytics
 
-
-
-# إضافة الكلاسات المخصصة إلى الـ allowlist
-torch.serialization.add_safe_globals([ultralytics.nn.tasks.DetectionModel])
-
-# تحميل النموذج مع weights_only=True
-model = torch.load('best.pt', weights_only=True)
-
-model.eval()  # Set the model to evaluation mode
-
-# Define the transformation (assuming your model uses common transforms like Resize, ToTensor)
-transform = T.Compose([
-    T.Resize((640, 640)),
-    T.ToTensor(),
-    T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-])
-
-# Function to predict on the image
-def predict_image(image):
-    # Apply transformations to the uploaded image
-    image = transform(image).unsqueeze(0)  # Add batch dimension
-
-    # Run the model to get predictions
-    with torch.no_grad():
-        outputs = model(image)
-    
-    # Process the outputs (modify as needed for your model's output format)
-    # Assuming the model outputs a dictionary with class labels and scores
-    predictions = outputs[0]  # Adjust based on how your model outputs
-    return predictions
+# محاولة تحميل النموذج باستخدام YOLOv8
+try:
+    # استخدام الطريقة الرسمية لتحميل النموذج باستخدام YOLOv8
+    model = YOLO('best.pt')  # تأكد من أن النموذج في نفس المجلد أو قدم المسار الصحيح
+    print("Model loaded successfully.")
+except Exception as e:
+    print(f"Error loading model: {e}")
 
 # Streamlit Interface
 def main():
@@ -47,14 +23,19 @@ def main():
         image = Image.open(uploaded_file)
         st.image(image, caption="Uploaded Image.", use_column_width=True)
         
-        # Make prediction
-        predictions = predict_image(image)
+        # تحويل الصورة إلى المسار الصحيح لتتمكن YOLO من معالجتها
+        image_path = uploaded_file.name
         
-        # Display results
-        st.write("Prediction Results:")
-        st.write("Phone Use:", predictions['PhoneUse'])
-        st.write("Seatbelt:", predictions['Seatbelt'])
-        st.write("Smoking:", predictions['Smoking'])
+        try:
+            # Make prediction using the model
+            results = model(image_path)
+            
+            # عرض النتائج
+            st.write("Prediction Results:")
+            st.write(f"Detected {len(results)} objects in the image.")
+            results.show()  # ستعرض الصورة مع المربعات المحددة للتنبؤات
+        except Exception as e:
+            st.write(f"Error during prediction: {e}")
 
 if __name__ == '__main__':
     main()
