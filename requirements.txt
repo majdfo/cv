@@ -1,10 +1,8 @@
 streamlit
 torch
-opencv-python
-pillow
-ultralytics
-matplotlib
+Pillow
+torchvision
 numpy
-tqdm
-python-dotenv
-seaborn==0.13.2
+opencv-python
+pyyaml
+requests
