@@ -1,6 +1,5 @@
 # my_utils.py
-import torch
-from ultralytics import YOLO
+from ultralytics import YOLO  # استيراد YOLO من مكتبة ultralytics
 import cv2
 import numpy as np
 from PIL import Image
