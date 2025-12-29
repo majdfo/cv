@@ -1,15 +1,6 @@
+streamlit
 torch
-numpy
 opencv-python
+pillow
 ultralytics
 matplotlib
-pandas
-requests
-pillow
-pyyaml
-streamlit
-streamlit
-ultralytics
-opencv-python-headless
-numpy
-Pillow
